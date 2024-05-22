@@ -1,6 +1,6 @@
 <template>
     <div class="form">
-        <h2>Registro de Productos</h2>
+        <h2>Registro de Productos | {{ establecimiento.nombre }} - {{ establecimiento.codigoEstablecimiento }}</h2>
         <hr>
         <form @submit.prevent="submitForm">
             <div>
@@ -9,7 +9,7 @@
             </div>
             <div>
                 <label for="precioUnidad">Precio Unidad:</label>
-                <input type="text" id="precioUnidad" v-model.trim="precioUnidad" placeholder="₡" required>
+                <input type="number" step="0.01" id="precioUnidad" v-model.trim="precioUnidad" placeholder="₡" required>
             </div>
             <div>
                 <label for="cantidadStock">Cantidad (Stock):</label>
@@ -21,20 +21,47 @@
 </template>
 
 <script>
+import { BASE_URL } from '../../config.js';
 export default {
     data() {
         return {
+            establecimiento: this.getEstablecimientoLocal(),
             descripcion: '',
             precioUnidad: '',
             cantidadStock: ''
         };
     },
     methods: {
+        getEstablecimientoLocal() {
+            const objetoRecuperadoString = localStorage.getItem('establemientoObject');
+            return JSON.parse(objetoRecuperadoString);
+        },
         submitForm() {
-            console.log('Datos del formulario:', {
-                descripcion: this.descripcion,
-                precioUnidad: this.precioUnidad,
-                cantidadStock: this.cantidadStock
+            fetch(BASE_URL + '/productos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    codigoEstablecimiento: this.establecimiento.codigoEstablecimiento,
+                    descripcion: this.descripcion,
+                    precioUnidad: parseFloat(this.precioUnidad),
+                    cantidadStock: this.cantidadStock
+                }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al crear el cliente');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Manejar la respuesta del servidor aquí
+                alert('Producto agregado al local!', data);
+                window.location.reload();
+            })
+            .catch(error => {
+                alert('Error al crear el producto:', error.message);
             });
         }
     }

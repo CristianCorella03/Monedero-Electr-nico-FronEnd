@@ -24,6 +24,9 @@
 </template>
 
 <script>
+
+import { BASE_URL } from '../../config.js';
+
 export default {
     name: 'EstablecimientosRegistrados',
     data() {
@@ -32,35 +35,38 @@ export default {
         }
     },
     created() {
-        this.establecimientosList = this.getData();
+        fetch(`${BASE_URL}/api/nodoEstablecimientos`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.establecimientosList = data;
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error.message);
+            });
     },
     methods: {
-        getData() {
-
-            /* fetch('https://api.example.com/data')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    this.responseData = data;
-                    this.isLoading = false;
-                })
-                .catch(error => {
-                    this.error = 'Error fetching data: ' + error.message;
-                    this.isLoading = false;
-                }); */
-
-            return [
-                { codigoEstablecimiento: 'ES1000', nombre: "Establecimiento 1", telefono: "88888888", direccion: "Santa Clara, TEC, Residencias", ip: "12.3.23.4" },
-                { codigoEstablecimiento: 'ES1001', nombre: "Establecimiento 2", telefono: "88888888", direccion: "Cartago, TEC, Residencias", ip: "12.3.23.5" },
-                { codigoEstablecimiento: 'ES1002', nombre: "Establecimiento 3", telefono: "88888888", direccion: "San Jose, TEC, Residencias", ip: "12.3.23.6" },
-            ]
-        },
         eliminarEstablecimiento(codigoEstablecimiento) {
-            alert('¡Se hizo clic en el establecimiento! ' + codigoEstablecimiento);
+            fetch(`${BASE_URL}/api/nodoEstablecimientos/${codigoEstablecimiento}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    codigoEstablecimiento
+                }),
+            })
+            .then(response => {
+                alert('Establecimiento eliminado!', response);
+                window.location.reload();
+            })
+            .catch(error => {
+                alert('Error al eliminar el establecimiento:' + codigoEstablecimiento, error.message);
+            });
         }
     }
 }

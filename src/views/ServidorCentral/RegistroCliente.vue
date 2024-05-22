@@ -16,13 +16,17 @@
                 <input type="text" id="apellidos" v-model.trim="apellidos" required>
             </div>
             <div>
+                <label for="telefono">Teléfono (Costa Rica):</label>
+                <input type="tel" id="telefono" v-model.trim="telefono" pattern="^[0-9]{4}[0-9]{4}"
+                    placeholder="########" required>
+            </div>
+            <div>
                 <label for="correo">Correo:</label>
                 <input type="email" id="correo" v-model.trim="correo" required>
             </div>
             <div>
-                <label for="telefono">Teléfono (Costa Rica):</label>
-                <input type="tel" id="telefono" v-model.trim="telefono" pattern="^[0-9]{4}[0-9]{4}"
-                    placeholder="########" required>
+                <label for="contrasenna">Contraseña:</label>
+                <input type="password" id="contrasenna" v-model.trim="contrasenna" required>
             </div>
             <button class="button" type="submit">Registrar Cliente</button>
         </form>
@@ -30,6 +34,9 @@
 </template>
 
 <script>
+
+import { BASE_URL } from '../../config.js';
+
 export default {
     data() {
         return {
@@ -37,17 +44,40 @@ export default {
             nombre: '',
             apellidos: '',
             correo: '',
-            telefono: ''
+            telefono: '',
+            contrasenna: ''
         };
     },
     methods: {
         submitForm() {
-            console.log('Datos del formulario:', {
-                cedula: this.cedula,
-                nombre: this.nombre,
-                apellidos: this.apellidos,
-                correo: this.correo,
-                telefono: this.telefono
+
+            fetch(BASE_URL + '/api/clientes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cedula: this.cedula,
+                    nombre: this.nombre,
+                    apellidos: this.apellidos,
+                    correo: this.correo,
+                    telefono: this.telefono,
+                    contrasenna: this.contrasenna
+                }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al crear el cliente');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Manejar la respuesta del servidor aquí
+                alert('Cliente creado!', data);
+                window.location.reload();
+            })
+            .catch(error => {
+                alert('Error al crear el cliente:', error.message);
             });
         }
     }

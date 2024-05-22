@@ -24,13 +24,20 @@
 </template>
 
 <script>
+
+import { BASE_URL } from '../../config.js';
+
 export default {
     data() {
         return {
+            IP: null,
             nombre: '',
             telefono: '',
             direccion: ''
         };
+    },
+    async created() {
+        await this.obtenerDireccionIP()
     },
     methods: {
         submitForm() {
@@ -38,7 +45,47 @@ export default {
                 nombre: this.nombre,
                 telefono: this.telefono,
                 direccion: this.direccion,
+                IP: this.IP
             });
+
+            fetch(BASE_URL + '/api/nodoEstablecimientos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nombre: this.nombre,
+                    telefono: this.telefono,
+                    direccion: this.direccion,
+                    IP: this.IP
+                }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al crear el establecimiento');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Manejar la respuesta del servidor aquí
+                alert('Establecimiento creado!', data);
+                window.location.reload();
+            })
+            .catch(error => {
+                alert('Error al crear el establecimiento:', error.message);
+            });
+        },
+        async obtenerDireccionIP() {
+            try {
+                const response = await fetch('https://api.ipify.org/?format=json');
+                if (!response.ok) {
+                    throw new Error('Error al obtener la dirección IP');
+                }
+                const data = await response.json();
+                this.IP = data.ip;
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
         }
     }
 };

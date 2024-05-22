@@ -19,10 +19,10 @@ export default {
         pageTitle: 'Web Clientes',
         color: '#DBF6CA',
         menuOptions: [
-          { text: 'Comprar', link: '/usuario/comprar' },
+          { text: 'Mi Cuenta', link: '/usuario/cuenta' },
+          { text: 'Comprar 🛒', link: '/usuario/comprar' },
           { text: 'Recargar', link: '/usuario/recargar' },
           { text: 'Mis Compras', link: '/usuario/compras' },
-          { text: 'Mi Cuenta', link: '/usuario/cuenta' },
         ]
       };
     }
@@ -45,10 +45,10 @@ export default {
         pageTitle: 'Central - Plataforma',
         color: '#FCD8D8',
         menuOptions: [
-          { text: 'Clientes', link: '/central/clientes' },
           { text: 'Establecimientos', link: '/central/establecimientos' },
-          { text: 'Registro Clientes', link: '/central/registro-cliente' },
-          { text: 'Registro Establecimientos', link: '/central/registro-establecimiento' },
+          { text: 'Clientes', link: '/central/clientes' },
+          { text: 'Registrar Clientes', link: '/central/registro-cliente' },
+          { text: 'Registrar Establecimientos', link: '/central/registro-establecimiento' },
         ]
       };
     }

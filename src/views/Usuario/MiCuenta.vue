@@ -19,10 +19,7 @@
             </tr>
         </table>
 
-        <section style="margin-left: 300px;">
-            <h2>Monto Actual</h2>
-            <h1 style="color: #B701A5"> ₡{{ monederoElectronico.saldo }} </h1>
-        </section>
+        <MontoActual :saldo="saldo"/>
 
         <section style="display: flex; gap: 20px;">
             <a class="button" href="/usuario/recargar">Realizar Deposito</a>
@@ -32,21 +29,51 @@
 </template>
 
 <script>
+import MontoActual from '../../components/MontoActual.vue';
+import { BASE_URL } from '../../config.js';
+
 export default {
     name: 'MiCuenta',
     data() {
         return {
-            idCliente: "C1000",
-            nombre: "Fulanito",
-            apellido: "Gustavo",
-            telefono: "88888888",
-            correo: "fulano@gmail.com",
-            monederoElectronico: {
-                idMonedero: 1,
-                idCliente: "C1000",
-                saldo: 20000.78
-            }
+            codigoCliente: "",
+            nombre: "",
+            apellidos: "",
+            cedula: "",
+            telefono: "",
+            correo: "",
+            saldo: 0,
+            idMonedero: 0
         }
+    },
+    async created() {
+        var clienteObjeto = JSON.parse(localStorage.getItem('username'))[0];
+        this.codigoCliente = clienteObjeto.codigoCliente;
+        
+
+        fetch(`${BASE_URL}/api/monederoElectronicos/saldo?codigoCliente=${this.codigoCliente}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const clienteObjeto = data[0];
+                this.nombre = clienteObjeto.nombre;
+                this.apellidos = clienteObjeto.apellidos;
+                this.cedula = clienteObjeto.cedula;
+                this.telefono = clienteObjeto.telefono;
+                this.correo = clienteObjeto.correo;
+                this.saldo = clienteObjeto.saldo;
+                this.idMonedero = clienteObjeto.idMonedero;
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error.message);
+            })
+    },
+    components: {
+        MontoActual
     },
     methods: {
         getDatos() {

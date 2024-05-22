@@ -29,3 +29,7 @@ hr {
     margin-top: 20px;
     text-decoration: none;
 }
+
+button:active {
+        background-color: #cbcb6e;
+}
